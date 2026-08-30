@@ -102,9 +102,9 @@ namespace Core.Banking
                 return false;
             }
 
-            bankService.ChangeSurveillanceBalance(-surveillanceCost);
-            bankService.AddOverworldBalance(requestedYen);
-            return true;
+            var spent = bankService.TrySpendSurveillanceBalance(surveillanceCost);
+            var deposited = bankService.TryDepositOverworldBalance(requestedYen);
+            return spent && deposited;
         }
 
         private void RaiseConversionFailed(bool success)

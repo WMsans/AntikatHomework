@@ -4,7 +4,8 @@ namespace Core.Banking
     {
         int OverworldBalance { get; }
         
-        void AddOverworldBalance(int amount);
+        bool TrySpendOverworldBalance(int amount);
+        bool TryDepositOverworldBalance(int amount);
         
         event BalanceChange OverworldBalanceChanged;
     }

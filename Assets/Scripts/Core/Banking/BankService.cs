@@ -17,28 +17,52 @@ namespace Core.Banking
             OverworldBalance = startingOverworldBalance < 0 ? 0 : startingOverworldBalance;
         }
 
-        public void ChangeSurveillanceBalance(int amount)
+        public bool TrySpendSurveillanceBalance(int amount)
         {
-            var delta = ComputeClampedDelta(SurveillanceBalance, amount);
-            if (delta == 0)
+            if (amount <= 0 || amount > SurveillanceBalance)
             {
-                return;
+                return false;
             }
 
-            SurveillanceBalance += delta;
-            RaiseSurveillanceBalanceChanged(delta);
+            SurveillanceBalance -= amount;
+            RaiseSurveillanceBalanceChanged(-amount);
+            return true;
         }
 
-        public void AddOverworldBalance(int amount)
+        public bool TryDepositSurveillanceBalance(int amount)
         {
-            var delta = ComputeClampedDelta(OverworldBalance, amount);
-            if (delta == 0)
+            if (amount <= 0 || amount > int.MaxValue - SurveillanceBalance)
             {
-                return;
+                return false;
             }
 
-            OverworldBalance += delta;
-            RaiseOverworldBalanceChanged(delta);
+            SurveillanceBalance += amount;
+            RaiseSurveillanceBalanceChanged(amount);
+            return true;
+        }
+
+        public bool TrySpendOverworldBalance(int amount)
+        {
+            if (amount <= 0 || amount > OverworldBalance)
+            {
+                return false;
+            }
+
+            OverworldBalance -= amount;
+            RaiseOverworldBalanceChanged(-amount);
+            return true;
+        }
+
+        public bool TryDepositOverworldBalance(int amount)
+        {
+            if (amount <= 0 || amount > int.MaxValue - OverworldBalance)
+            {
+                return false;
+            }
+
+            OverworldBalance += amount;
+            RaiseOverworldBalanceChanged(amount);
+            return true;
         }
 
         bool IConversionBank.TryApplyConversion(int surveillanceCost, int requestedYen)
@@ -64,22 +88,6 @@ namespace Core.Banking
             RaiseSurveillanceBalanceChanged(-surveillanceCost);
             RaiseOverworldBalanceChanged(requestedYen);
             return true;
-        }
-
-        private static int ComputeClampedDelta(int balance, int amount)
-        {
-            if (amount == 0)
-            {
-                return 0;
-            }
-
-            var target = balance + amount;
-            if (target < 0)
-            {
-                target = 0;
-            }
-
-            return (int)(target - balance);
         }
 
         private void RaiseSurveillanceBalanceChanged(int changeAmount)

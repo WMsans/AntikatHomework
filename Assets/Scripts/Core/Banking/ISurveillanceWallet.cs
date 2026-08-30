@@ -4,7 +4,8 @@ namespace Core.Banking
     {
         int SurveillanceBalance { get; }
         
-        void ChangeSurveillanceBalance(int amount);
+        bool TrySpendSurveillanceBalance(int amount);
+        bool TryDepositSurveillanceBalance(int amount);
         
         event BalanceChange SurveillanceBalanceChanged;
     }
