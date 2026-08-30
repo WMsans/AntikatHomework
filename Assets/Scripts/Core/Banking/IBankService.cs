@@ -1,14 +1,8 @@
-using System;
-using UnityEngine;
-
 namespace Core.Banking
 {
-    public class IBankService
+    public interface IBankService : ISurveillanceWallet, IOverworldWallet
     {
-        ISurveillanceWallet SurveillanceWallet { get; }
-        IOverworldWallet OverworldWallet { get; }
     }
 
-    public delegate void BalanceChange(int changeAmount); 
+    public delegate void BalanceChange(int changeAmount);
 }
-
